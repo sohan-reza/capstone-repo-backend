@@ -4,11 +4,11 @@ import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const blacklist = new Set();
+import { blacklist } from "../utils/blacklistStore.js";
 
 const registerUser=async(req,res)=>{
   try {
-    const {email,password,role}=req.body;
+    const {username,email,password,role}=req.body;
     const Email= await User.findOne({email:email});
     if(Email){
         res.status(StatusCodes.BAD_REQUEST)
@@ -20,7 +20,7 @@ const registerUser=async(req,res)=>{
         return;
     }
     const hashpassword=await bcrypt.hash(password,10);
-    const user=new User({email,password:hashpassword,role});
+    const user=new User({username,email,password:hashpassword,role});
     await user.save();
     
     res.status(StatusCodes.CREATED)
@@ -85,33 +85,7 @@ const loginUser=async(req,res)=>{
         
   }
 }
-const verify=async(req,res)=>{
-  try {
-    const token = req.header('Authorization')?.split(' ')[1];
-    if (!token) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ status:false,message: "Token is required" });
-    }
 
-    if (blacklist.has(token)) {
-      return res.status(403).json({ status:false,message: 'Token has been invalidated' });
-    }
-  
-    try {
-      const decoded = jwt.verify(token, process.env.SECRET_KEY);
-      res.json({ status: true, user: decoded });
-    } catch (error) {
-      res.status(StatusCodes.UNAUTHORIZED).json({ status: false, message: "Invalid or expired token" });
-    }
-  } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({
-          status:false,
-          message:"something went wrong"
-        })
-        console.log(error);
-        
-  }
-}
 const logout =async(req,res)=>{
   try {
     const token = req.header('Authorization')?.split(' ')[1];
@@ -135,6 +109,5 @@ const logout =async(req,res)=>{
 export const authController={
   registerUser,
   loginUser,
-  verify,
   logout
 }
