@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { blacklist } from "../utils/blacklistStore";
 
-const verifyJWT=async(req,res,next)=>{
+export const verifyJWT=async(req,res,next)=>{
     const token = req.header('Authorization')?.split(' ')[1];
     if (!token) {
       return res.status(StatusCodes.BAD_REQUEST).json({ status:false,message: "Token is required" });
@@ -20,4 +20,16 @@ const verifyJWT=async(req,res,next)=>{
     }
 }
 
-export default verifyJWT;
+export const checkRole = (role) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ status:false,message: "Unauthorized: No user found" });
+    }
+
+    if (req.user.role !== role) {
+      return res.status(StatusCodes.FORBIDDEN).json({status:false, message: "Forbidden: Access denied" });
+    }
+
+    next();
+  };
+};
