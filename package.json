@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch=src --env-file=.env src/index.js"
+    "start":"node --watch src/index.js",
+    "dev": "node --watch --env-file=.env src/index.js"
   },
   "type": "module",
   "keywords": [],
