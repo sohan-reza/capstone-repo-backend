@@ -40,7 +40,7 @@ const registerUser=async(req,res)=>{
 
 const loginUser=async(req,res)=>{
   try {
-    const {email,password}=req.body;
+    const {email,password,rememberMe}=req.body;
     
     const userByemail= await User.findOne({email:email});
     if(!userByemail){
@@ -67,13 +67,14 @@ const loginUser=async(req,res)=>{
       email:userByemail.email,
       role:userByemail.role
     }
-    const token=jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:'1d'});
+    const expiresIn = rememberMe ? "7d" : "1h";
+    const token=jwt.sign(payload,process.env.SECRET_KEY,{expiresIn});
     
     res.status(StatusCodes.CREATED)
       .json({
         status:true,
         message:"Successfully login",
-        acesstoken:token
+        accesstoken:token
      })
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR)
