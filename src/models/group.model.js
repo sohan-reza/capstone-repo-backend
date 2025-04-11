@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
-const groupSchema = new Schema({
-  groupName: { type: String, required: true }, 
+const memberSchema = new Schema({
+  username: { type: String, required: true }, 
   intake: { type: String, required: true },   
   section: { type: String, required: true },  
   department: { type: String, required: true }, 
@@ -9,6 +9,20 @@ const groupSchema = new Schema({
   phone: { type: String, required: true } 
 });
 
-const Group = model('Group', groupSchema);
+const teamSchema = new Schema({
+  teamName: { type: String, required: true,unique: true},
+  members: {
+    type: [memberSchema],
+    validate: {
+      validator: function(v) {
+        return v.length <= 5; 
+      },
+     message: 'A team can have at most 5 members'
+    },
+    required: true
+  }
+});
+
+const Group = model('Group', teamSchema);
 
 export default Group;
