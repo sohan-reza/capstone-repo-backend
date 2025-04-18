@@ -14,6 +14,10 @@ const teamTaskSchema = new Schema({
     type: String,
     required: false 
   },
+  status: {
+    type: String,
+    required: false 
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -27,6 +31,7 @@ const teamTaskSchema = new Schema({
 // Update the updatedAt field before saving
 teamTaskSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
+  this.status = "Not Completed"
   next();
 });
 

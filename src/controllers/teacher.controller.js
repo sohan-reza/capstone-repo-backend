@@ -50,11 +50,16 @@ const getTeamTasks = async (req, res) => {
 const updateTeamTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { assignedTask, remarks } = req.body;
+    const { assignedTask, remarks, status } = req.body;
+
+    const updateFields = {};
+    if (assignedTask !== undefined) updateFields.assignedTask = assignedTask;
+    if (remarks !== undefined) updateFields.remarks = remarks;
+    if (status !== undefined) updateFields.status = status;
 
     const updatedTask = await TeamTask.findByIdAndUpdate(
       id,
-      { assignedTask, remarks },
+      updateFields,
       { new: true, runValidators: true }
     );
 
