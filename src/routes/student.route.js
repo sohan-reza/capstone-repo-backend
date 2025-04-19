@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {studentController} from "../controllers/student.controller.js";
-import validateCredentials from "../middlewares/validateCredentials.middleware.js"
 const router = Router();
 
 router.post("/groups", studentController.createGroup);
