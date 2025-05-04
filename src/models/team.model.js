@@ -11,6 +11,8 @@ const memberSchema = new Schema({
 
 const teamSchema = new Schema({
   teamName: { type: String, required: true,unique: true},
+  assignedTeacher: { type: String},
+  teacherId: {type: String},
   members: {
     type: [memberSchema],
     validate: {
@@ -23,6 +25,6 @@ const teamSchema = new Schema({
   }
 });
 
-const Group = model('Group', teamSchema);
+const Team = model('Team', teamSchema);
 
-export default Group;
+export default Team;
