@@ -2,12 +2,13 @@ import { Router } from "express";
 import {studentController} from "../controllers/student.controller.js";
 const router = Router();
 
-router.post("/groups", studentController.createGroup);
-router.get("/groups", studentController.getGroups);
-router.get("/groups/:id", studentController.getGroupById);
-router.get("/groups/myteam/:educationalmail", studentController.getGroupsByEducationalMail);
-router.patch("/groups/name:id", studentController.updateGroupName);
-router.put("/groups/:teamName/:educationalMail", studentController.updateGroupMember);
-router.delete("/groups/:id", studentController.deleteGroup);
+router.post("/team", studentController.createTeam);
+router.get("/team", studentController.getTeams);
+router.get("/team/:id", studentController.getTeamById);
+router.get("/team/myteam/:educationalmail", studentController.getTeamsByEducationalMail);
+router.patch("/team/name:id", studentController.updateTeamName);
+router.patch("/team/assign-teacher", studentController.updateTeam);
+router.put("/team/:teamName/:educationalMail", studentController.updateTeamMember);
+router.delete("/team/:id", studentController.deleteTeam);
 
 export default router;

@@ -1,7 +1,7 @@
-import Group from "../models/group.model.js";
+import Team from "../models/team.model.js";
 import { StatusCodes } from "http-status-codes";
 
-const createGroup = async (req, res) => {
+const createTeam = async (req, res) => {
   try {
     const { teamName, members } = req.body;
 
@@ -48,22 +48,22 @@ const createGroup = async (req, res) => {
       }
     }
 
-    const existingGroup = await Group.findOne({ teamName });
-    if (existingGroup) {
+    const existingTeam = await Team.findOne({ teamName });
+    if (existingTeam) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: false,
-        message: 'A group with this name already exists.',
+        message: 'A team with this name already exists.',
       });
     }
 
-    const conflictingMembers = await Group.find({
+    const conflictingMembers = await Team.find({
       'members.educationalMail': { $in: emails },
     });
 
     if (conflictingMembers.length > 0) {
       const usedEmails = [];
-      conflictingMembers.forEach((group) => {
-        group.members.forEach((member) => {
+      conflictingMembers.forEach((team) => {
+        team.members.forEach((member) => {
           if (emails.includes(member.educationalMail)) {
             usedEmails.push(member.educationalMail);
           }
@@ -72,72 +72,72 @@ const createGroup = async (req, res) => {
 
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: false,
-        message: `The following member(s) are already part of another group: ${[...new Set(usedEmails)].join(', ')}`,
+        message: `The following member(s) are already part of another team: ${[...new Set(usedEmails)].join(', ')}`,
       });
     }
 
-    const group = await Group.create({ teamName, members });
+    const team = await Team.create({ teamName, members });
 
     return res.status(StatusCodes.CREATED).json({
       status: true,
-      message: 'Group created successfully.',
-      data: group,
+      message: 'Team created successfully.',
+      data: team,
     });
   } catch (error) {
-    console.error('Error creating group:', error);
+    console.error('Error creating team:', error);
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
-      message: 'Something went wrong while creating the group.',
+      message: 'Something went wrong while creating the team.',
       error: error.message,
     });
   }
 };
 
- const getGroups = async (req, res) => {
+ const getTeams = async (req, res) => {
   try {
-    const groups = await Group.find();
-    res.status(StatusCodes.OK).json({ status: true, data: groups });
+    const Teams = await Team.find();
+    res.status(StatusCodes.OK).json({ status: true, data: Teams });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
   }
 };
 
-const getGroupById = async (req, res) => {
+const getTeamById = async (req, res) => {
   try {
-    const group = await Group.findById(req.params.id);
-    if (!group) {
-      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Group not found" });
+    const Team = await Team.findById(req.params.id);
+    if (!Team) {
+      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Team not found" });
     }
-    res.status(StatusCodes.OK).json({ status: true, data: group });
+    res.status(StatusCodes.OK).json({ status: true, data: Team });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
   }
 };
 
- const getGroupsByEducationalMail = async (req, res) => {
+ const getTeamsByEducationalMail = async (req, res) => {
   try {
     const { educationalmail } = req.params;
     console.log(educationalmail);
     
 
-    const groups = await Group.find({
+    const Teams = await Team.find({
       members: {
         $elemMatch: { educationalMail: educationalmail }
       }
     });
 
-    if (groups.length === 0) {
+    if (Teams.length === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         status: false,
-        message: "No groups found for this email",
+        message: "No Teams found for this email",
       });
     }
 
     res.status(StatusCodes.OK).json({
       status: true,
-      message: "Groups retrieved successfully",
-      data: groups,
+      message: "Teams retrieved successfully",
+      data: Teams,
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -148,20 +148,20 @@ const getGroupById = async (req, res) => {
   }
 };
 
- const updateGroupName = async (req, res) => {
+ const updateTeamName = async (req, res) => {
   try {
     const { teamName } = req.body;
-    const updatedGroup = await Group.findByIdAndUpdate(req.params.id, { teamName }, { new: true, runValidators: true });
-    if (!updatedGroup) {
-      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Group not found" });
+    const updatedTeam = await Team.findByIdAndUpdate(req.params.id, { teamName }, { new: true, runValidators: true });
+    if (!updatedTeam) {
+      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Team not found" });
     }
-    res.status(StatusCodes.OK).json({ status: true, message: "Group updated successfully", data: updatedGroup });
+    res.status(StatusCodes.OK).json({ status: true, message: "Team updated successfully", data: updatedTeam });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
   }
 };
 
-const updateGroupMember = async (req, res) => {
+const updateTeamMember = async (req, res) => {
   try {
     const { teamName, educationalMail } = req.params;
     const updatedData = req.body;
@@ -173,7 +173,7 @@ const updateGroupMember = async (req, res) => {
     }
 
     if (updatedData.educationalMail && updatedData.educationalMail !== educationalMail) {
-      const exists = await Group.findOne({
+      const exists = await Team.findOne({
         'members.educationalMail': updatedData.educationalMail,
       });
 
@@ -189,7 +189,7 @@ const updateGroupMember = async (req, res) => {
       updateFields[`members.$.${key}`] = updatedData[key];
     }
 
-    const result = await Group.updateOne(
+    const result = await Team.updateOne(
       { teamName, 'members.educationalMail': educationalMail },
       { $set: updateFields }
     );
@@ -197,7 +197,7 @@ const updateGroupMember = async (req, res) => {
     if (result.matchedCount === 0) {
       return res.status(StatusCodes.NOT_FOUND).json({
         status: false,
-        message: 'Member or group not found.',
+        message: 'Member or Team not found.',
       });
     }
 
@@ -215,26 +215,40 @@ const updateGroupMember = async (req, res) => {
   }
 };
 
-const deleteGroup = async (req, res) => {
+const deleteTeam = async (req, res) => {
   try {
-    const deletedGroup = await Group.findByIdAndDelete(req.params.id);
-    if (!deletedGroup) {
-      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Group not found" });
+    const deletedTeam = await Team.findByIdAndDelete(req.params.id);
+    if (!deletedTeam) {
+      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Team not found" });
     }
-    res.status(StatusCodes.OK).json({ status: true, message: "Group deleted successfully" });
+    res.status(StatusCodes.OK).json({ status: true, message: "Team deleted successfully" });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
   }
 };
 
+const updateTeam = async (req, res) => {
+  try {
+    const { teamId, teacherName, teacherId } = req.body;
+    const updatedTeam = await Team.findByIdAndUpdate(teamId, { assignedTeacher: teacherName, teacherId }, { new: true, runValidators: true });
+    if (!updatedTeam) {
+      return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Team not found" });
+    }
+    res.status(StatusCodes.OK).json({ status: true, message: "Team updated successfully", data: updatedTeam });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
+  }
+}
+
 
 
 export const studentController={
-    createGroup,
-    getGroups,
-    getGroupById,
-    getGroupsByEducationalMail,
-    updateGroupName,
-    updateGroupMember,
-    deleteGroup
+    createTeam,
+    getTeams,
+    getTeamById,
+    getTeamsByEducationalMail,
+    updateTeamName,
+    updateTeamMember,
+    deleteTeam,
+    updateTeam
 }
