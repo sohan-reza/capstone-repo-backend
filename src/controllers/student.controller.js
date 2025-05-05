@@ -19,7 +19,7 @@ const createTeam = async (req, res) => {
       });
     }
 
-    if (members.length !== 5) {
+    if (members.length > 5) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: false,
         message: 'A team must have exactly 5 members.',
