@@ -4,16 +4,16 @@ import { StatusCodes } from "http-status-codes";
 
 const createTeamTask = async (req, res) => {
   try {
-    const { teamId, assignedTask, remarks } = req.body;
+    const { teamName, assignedTask, remarks } = req.body;
 
-    if (!teamId) {
+    if (!teamName) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         status: false,
-        message: "Team ID is required",
+        message: "Team Name is required",
       });
     }
 
-    const teamTask = await TeamTask.create({ teamId, assignedTask, remarks });
+    const teamTask = await TeamTask.create({ teamName, assignedTask, remarks });
     
     res.status(StatusCodes.CREATED).json({ 
       status: true, 
@@ -31,8 +31,8 @@ const createTeamTask = async (req, res) => {
 
 const getTeamTasks = async (req, res) => {
   try {
-    const { teamId } = req.params;
-    const tasks = await TeamTask.find({ teamId }).sort({ createdAt: -1 });
+    const { teamName } = req.params;
+    const tasks = await TeamTask.find({ teamName });
 
     res.status(StatusCodes.OK).json({
       status: true,

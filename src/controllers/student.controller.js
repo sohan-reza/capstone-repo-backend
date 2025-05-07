@@ -111,7 +111,7 @@ const getAllTeamByTeacher = async (req, res) => {
     const team = await Team.find({assignedTeacher:teacher.fullName});
     res.status(StatusCodes.OK).json({
       status: true,
-      message: "Team names retrieved successfully",
+      message: "Team retrieved successfully",
       data: team,
     });
   } catch (error) {

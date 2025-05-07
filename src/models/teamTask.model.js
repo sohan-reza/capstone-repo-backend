@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const teamTaskSchema = new Schema({
-  teamId: {
+  teamName: {
     type: String,
     required: true,
     index: true 

@@ -18,6 +18,11 @@ const createUser = async (req, res) => {
       return res.status(400).json({ status: false, message: "All fields are required" });
     }
 
+    const teacher= await Teacher.findOne({educationalMail});
+    if(teacher){
+      return res.status(StatusCodes.BAD_REQUEST).json({ status: false, message: "This teacher is already registered" });
+    }
+
     const hashpassword = await bcrypt.hash(defaultPassword, 10);
 
     const newUser = await User.create([{ 
@@ -38,7 +43,7 @@ const createUser = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       status: true,
       message: "User created successfully",
       data: user[0]
