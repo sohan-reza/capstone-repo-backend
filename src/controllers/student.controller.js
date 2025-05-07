@@ -1,3 +1,4 @@
+import Teacher from "../models/teacher.model.js";
 import Team from "../models/team.model.js";
 import { StatusCodes } from "http-status-codes";
 
@@ -102,6 +103,26 @@ const createTeam = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, message: error.message });
   }
 };
+
+const getAllTeamByTeacher = async (req, res) => {
+  
+  const teacher= await Teacher.findOne({educationalMail:req.user.email});
+  try {
+    const team = await Team.find({assignedTeacher:teacher.fullName});
+    res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Team names retrieved successfully",
+      data: team,
+    });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: "Something went wrong while fetching team by teacher",
+      error: error.message,
+    });
+  }
+};
+
 
 const getTeamById = async (req, res) => {
   try {
@@ -230,6 +251,10 @@ const deleteTeam = async (req, res) => {
 const updateTeam = async (req, res) => {
   try {
     const { teamId, teacherName, teacherId } = req.body;
+    const team=await Team.findById(teamId);
+    if(team.assignedTeacher===teacherName){
+      return res.status(StatusCodes.BAD_REQUEST).json({ status: false, message: "This teacher has already been assigned to this team." });
+    }
     const updatedTeam = await Team.findByIdAndUpdate(teamId, { assignedTeacher: teacherName, teacherId }, { new: true, runValidators: true });
     if (!updatedTeam) {
       return res.status(StatusCodes.NOT_FOUND).json({ status: false, message: "Team not found" });
@@ -245,6 +270,7 @@ const updateTeam = async (req, res) => {
 export const studentController={
     createTeam,
     getTeams,
+    getAllTeamByTeacher,
     getTeamById,
     getTeamsByEducationalMail,
     updateTeamName,

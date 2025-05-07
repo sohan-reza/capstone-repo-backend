@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { blacklist } from "../utils/blacklistStore";
+import { blacklist } from "../utils/blacklistStore.js";
+import jwt from 'jsonwebtoken';
 
 export const verifyJWT=async(req,res,next)=>{
     const token = req.header('Authorization')?.split(' ')[1];
