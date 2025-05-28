@@ -173,7 +173,7 @@ const updateProject = async (req, res) => {
       projectCategory
     } = req.body;
 
-    console.log("Error: " + req.body.teamName);
+    // console.log("Error: " + req.body.teamName);
 
     const project = await Project.findById(id);
     if (!project) {
