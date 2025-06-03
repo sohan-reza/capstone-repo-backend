@@ -85,7 +85,13 @@ const createTeam = async (req, res) => {
       data: team,
     });
   } catch (error) {
-    console.error('Error creating team:', error);
+    if(error.name==="ValidationError"){
+      const messages = Object.values(error.errors).map(e => e.message);
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        status: false,
+        message: messages,
+      });  
+    }
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
