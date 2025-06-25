@@ -47,6 +47,16 @@ const createTeam = async (req, res) => {
           message: `Member ${i + 1} is missing or has invalid fields: ${missingFields.join(', ')}`,
         });
       }
+      const email = member.educationalMail.toLowerCase().trim();
+      const dept = member.department.toLowerCase().trim();
+
+      const subdomainMatch = email.match(/^.+@([a-z]+)\.bubt\.edu\.bd$/);
+      if (subdomainMatch && subdomainMatch[1] !== dept) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          status: false,
+          message: `Member ${i + 1}: department "${dept}" does not match educationalMail domain "${subdomainMatch[1]}"`,
+        });
+      }
     }
 
     const existingTeam = await Team.findOne({ teamName });
@@ -85,6 +95,8 @@ const createTeam = async (req, res) => {
       data: team,
     });
   } catch (error) {
+    console.log(error);
+    
     if(error.name==="ValidationError"){
       const messages = Object.values(error.errors).map(e => e.message);
       return res.status(StatusCodes.BAD_REQUEST).json({

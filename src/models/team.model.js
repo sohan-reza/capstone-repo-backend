@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import validator from 'validator';
 
-const emailRegex = /^[a-zA-Z0-9._]+@(bubt\.edu\.bd|cse\.bubt\.edu\.bd)$/;
+const emailRegex = /^[a-zA-Z0-9._]+@([a-z]+\.)?bubt\.edu\.bd$/;
 
 const memberSchema = new Schema({
   username: { type: String, required: true }, 

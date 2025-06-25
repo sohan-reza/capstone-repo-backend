@@ -23,7 +23,7 @@ const ValidateCredentials = (type)=>{
       return;
     }
 
-    const emailRegex = /^[a-zA-Z0-9._]+@(bubt\.edu\.bd|cse\.bubt\.edu\.bd)$/;
+    const emailRegex = /^[a-zA-Z0-9._]+@([a-z]+\.)?bubt\.edu\.bd$/;
     if (!emailRegex.test(email)) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid email format only allowed bubt edu mail" });
       return;
