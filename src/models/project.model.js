@@ -19,7 +19,7 @@ const projectSchema = new Schema({
   projectCategory: { 
     type: String, 
     required: true,
-    enum: ['Thesis', 'Research Project', 'Course Project', 'Personal Project'] 
+    enum: ['Thesis', 'Research Project', 'Course Project', 'Capstone Project'] 
   },
   createdAt: { type: Date, default: Date.now }
 });
